@@ -15,46 +15,24 @@ public class Controller {
         Scanner sc =  new Scanner(System.in);
 
         model.setRandomValue();
-
-        view.printMessage(View.START_GAME);
-
-        view.printRange(model.getMinBar(), model.getMaxBar());
-        model.setGuessedValue(inputIntValueWithScanner(sc));
-        model.incCount();
-        view.printTries(model.getCount());
-        model.setLastValue(model.getGuessedValue());
-        view.printLastValue(model.getGuessedValue());
+        setViewEnvironment(View.START_GAME, sc);
 
         while(!model.compareGuessedToValue()) {
 
             if(!model.checkBounds()) {
-                view.printMessage(View.WRONG_INPUT_RANGE);
-                view.printRange(model.getMinBar(), model.getMaxBar());
-                model.setGuessedValue(inputIntValueWithScanner(sc));
-                model.incCount();
-                view.printTries(model.getCount());
-                view.printLastValue(model.getGuessedValue());
-                model.setLastValue(model.getGuessedValue());
-
+                setViewEnvironment(View.WRONG_INPUT_RANGE, sc);
             } else {
-                view.printMessage(View.TRY_AGAIN);
                 if(model.getGuessedValue() < model.getValue()) {
                     model.setMinBar(model.getGuessedValue());
                 } else if(model.getGuessedValue() > model.getValue()){
                     model.setMaxBar(model.getGuessedValue());
                 }
-                view.printRange(model.getMinBar(), model.getMaxBar());
-                model.setGuessedValue(inputIntValueWithScanner(sc));
-                model.incCount();
-                view.printTries(model.getCount());
-                view.printLastValue(model.getGuessedValue());
-                model.setLastValue(model.getGuessedValue());
-
+                setViewEnvironment(View.TRY_AGAIN, sc);
             }
         }
 
         if(model.compareGuessedToValue()) {
-            view.printMessage(View.WIN_GAME);
+            printEndOfGame();
         }
     }
 
@@ -68,5 +46,19 @@ public class Controller {
             sc.next();
         }
         return sc.nextInt();
+    }
+
+    private void setViewEnvironment(String viewMessage, Scanner sc) {
+        view.printMessage(viewMessage);
+        view.printTries(model.getCount());
+        view.printRange(model.getMinBar(), model.getMaxBar());
+        model.setGuessedValue(inputIntValueWithScanner(sc));
+        model.incrementCount();
+        model.setLastValue(model.getGuessedValue());
+    }
+
+    private void printEndOfGame() {
+        view.printMessage(View.WIN_GAME);
+        view.printMessage(View.TOTAL_TRIES + model.getCount());
     }
 }
